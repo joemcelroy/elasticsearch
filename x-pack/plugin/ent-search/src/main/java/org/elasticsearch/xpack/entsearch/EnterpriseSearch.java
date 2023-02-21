@@ -33,6 +33,16 @@ import org.elasticsearch.xcontent.NamedXContentRegistry;
 import org.elasticsearch.xpack.core.XPackPlugin;
 import org.elasticsearch.xpack.core.XPackSettings;
 import org.elasticsearch.xpack.entsearch.engine.EngineIndexService;
+import org.elasticsearch.xpack.entsearch.analytics.action.*;
+import org.elasticsearch.rest.RestController;
+import org.elasticsearch.rest.RestHandler;
+import org.elasticsearch.common.settings.ClusterSettings;
+import org.elasticsearch.common.settings.IndexScopedSettings;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.settings.SettingsFilter;
+import org.elasticsearch.cluster.node.DiscoveryNodes;
+import org.elasticsearch.xpack.entsearch.analytics.rest.RestEventsIntakeAction;
+
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -58,12 +68,29 @@ public class EnterpriseSearch extends Plugin implements ActionPlugin, SystemInde
     }
 
     @Override
+    public List<RestHandler> getRestHandlers(
+        Settings settings,
+        RestController restController,
+        ClusterSettings clusterSettings,
+        IndexScopedSettings indexScopedSettings,
+        SettingsFilter settingsFilter,
+        IndexNameExpressionResolver indexNameExpressionResolver,
+        Supplier<DiscoveryNodes> nodesInCluster
+    ) {
+        return List.of(
+            new RestEventsIntakeAction()
+        );
+    }
+
+    @Override
     public List<ActionHandler<? extends ActionRequest, ? extends ActionResponse>> getActions() {
         if (enabled == false) {
             return Collections.emptyList();
         }
         // Register new actions here
-        return Collections.emptyList();
+        return List.of(
+            new ActionPlugin.ActionHandler<>(EventsIntakeAction.INSTANCE, EventsIntakeTransportAction.class)
+        );
     }
 
     @Override
