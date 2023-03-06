@@ -75,5 +75,4 @@ public class DeleteAnalyticsCollectionAction extends ActionType<AcknowledgedResp
         }
 
     }
-
 }
